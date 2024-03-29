@@ -95,6 +95,7 @@ def train(model, num_epochs, device):
     # Initiate the values
     train_risk = []
     test_risk = []
+
     test_mae = []
 
     for epoch in range(num_epochs):
@@ -130,7 +131,8 @@ def train(model, num_epochs, device):
             # one step of gradient descent
             optimizer.step()
             counter += 1
-            print(counter)
+            if counter % 50 == 0:
+                print(counter)
 
 
         # test out model after update by the optimizer
@@ -150,7 +152,7 @@ def train(model, num_epochs, device):
         end_time = time.time()
         # Calculate the time difference in seconds
         epoch_time = end_time - start_time
-        print(f"Time spent for these 2 epoch: {epoch_time} seconds")
+        print(f"Time spent for this epoch: {epoch_time} seconds")
 
     # plot the losses
     plt.plot([i+1 for i in range(num_epochs)], train_risk, label='training risk')
@@ -169,9 +171,9 @@ def train(model, num_epochs, device):
     plt.legend()
     plt.show()
 
-    return train_risk, train_risk, test_accuracy
+    return train_risk, test_risk, test_mae
 
-train_risk, train_risk, test_accuracy = train(model, 20, device)
+train_risk, test_risk, test_mae = train(model, 20, device)
 
 
 save_path = 'trained_model.pth'
