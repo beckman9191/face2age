@@ -2,14 +2,13 @@ from age_dataset import AgeDataset
 from torch.utils.data import DataLoader
 import torchvision
 
-batch_size = 100
+batch_size = 64
 
-train_dataset = AgeDataset('dataset/age/train')
-print(train_dataset.__getitem__(2))
-print(train_dataset.__getitem__(2)[0].shape)
+train_dataset = AgeDataset('dataset_new/age/train')
+
 train_loader = DataLoader(train_dataset, batch_size, shuffle=True)
 
-test_dataset = AgeDataset('dataset/age/test')
+test_dataset = AgeDataset('dataset_new/age/test')
 test_loader = DataLoader(test_dataset, batch_size, shuffle=True)
 
 for i, (images, labels) in enumerate(train_loader):

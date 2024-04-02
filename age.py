@@ -33,8 +33,8 @@ original_path_test = [row[1] for row in D_test]
 
 # Making the directory structure
 for i in range(102):
-    output_dir_train_male = 'dataset/age/train/' + str(i)
-    output_dir_train_female = 'dataset/age/train/' + str(i)
+    output_dir_train_male = 'dataset_new/age/train/' + str(i)
+    output_dir_train_female = 'dataset_new/age/train/' + str(i)
 
     if not os.path.exists(output_dir_train_male):
         os.makedirs(output_dir_train_male)
@@ -42,8 +42,8 @@ for i in range(102):
     if not os.path.exists(output_dir_train_female):
         os.makedirs(output_dir_train_female)
 
-    output_dir_test_male = 'dataset/age/test/' + str(i)
-    output_dir_test_female = 'dataset/age/test/' + str(i)
+    output_dir_test_male = 'dataset_new/age/test/' + str(i)
+    output_dir_test_female = 'dataset_new/age/test/' + str(i)
 
     if not os.path.exists(output_dir_test_male):
         os.makedirs(output_dir_test_male)
@@ -62,7 +62,7 @@ with open(train_csv, 'w', newline='') as csvfile:
     for image in D_train:
         img = cv2.imread(image[1], 1)
         img = cv2.resize(img, (height ,width))
-        path = 'dataset/age/train/' + str(image[0]) + '/' + str(counter) + '.jpg'
+        path = 'dataset_new/age/train/' + str(image[0]) + '/' + str(counter) + '.jpg'
         cv2.imwrite(path, img)
         writer.writerow([original_path_train[counter], path, age_train[counter]])
         print('--('+str(counter)+')Processing--')
@@ -77,7 +77,7 @@ with open(test_csv, 'w', newline='') as csvfile:
     for image in D_test:
         img = cv2.imread(image[1], 1)
         img = cv2.resize(img, (height ,width))
-        path = 'dataset/age/train/' + str(image[0]) + '/' + str(counter) + '.jpg'
+        path = 'dataset_new/age/test/' + str(image[0]) + '/' + str(counter) + '.jpg'
 
         cv2.imwrite(path, img)
         writer.writerow([original_path_test[counter], path, age_train[counter]])
@@ -85,5 +85,3 @@ with open(test_csv, 'w', newline='') as csvfile:
         counter += 1
 
 print(f'CSV file "{test_csv}" created successfully.')
-
-

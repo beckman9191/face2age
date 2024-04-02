@@ -7,7 +7,7 @@ from PIL import Image
 model = myCNN()
 
 # Load the saved state dictionary
-model.load_state_dict(torch.load('trained_model.pth'))
+model.load_state_dict(torch.load('result/trained_model.pth'))
 
 # Set the model to evaluation mode
 model.eval()
@@ -20,7 +20,7 @@ transform = transforms.Compose([
 ])
 
 # Load an image and apply transformations
-image = Image.open('./testtest3.png').convert('RGB')
+image = Image.open('./d77.png').convert('RGB')
 #image = Image.open('./dataset/age/test/27/461.jpg').convert('RGB')
 image_tensor = transform(image).unsqueeze(0)  # Add a batch dimension
 
@@ -29,9 +29,4 @@ with torch.no_grad():  # No need to track gradients
     output = model(image_tensor)
 
 print(output)
-
-# Process the output as needed
-predicted_label = output.argmax(dim=1)
-
-print(predicted_label)
 
