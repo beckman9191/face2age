@@ -18,6 +18,10 @@ def augment_images(input_dir, output_dir, target_count):
     # List all images in the input directory
     image_files = [f for f in os.listdir(input_dir) if f.endswith('.jpg')]
 
+    # If the folder already has more than or equal to target_count images, do nothing
+    if len(image_files) >= target_count:
+        return
+
     # Calculate the number of augmentations needed per image
     augmentations_per_image = max(target_count // len(image_files), 1)
 
@@ -39,7 +43,7 @@ def augment_images(input_dir, output_dir, target_count):
                 break  # Stop after generating enough augmentations
 
 # Define your input and output directories
-age_groups = range(50, 90)
+age_groups = range(18, 90)
 counter = 0
 for age in age_groups:
     input_dir_train = f'dataset_new/age/train/{age}'

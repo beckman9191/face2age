@@ -6,13 +6,17 @@ from dateutil.relativedelta import relativedelta
 
 cols = ['age', 'gender', 'path', 'face_score1', 'face_score2']
 
+
 wiki_mat = 'wiki_crop/wiki.mat'
+
 
 wiki_data = loadmat(wiki_mat)
 
 del wiki_mat
 
+
 wiki = wiki_data['wiki']
+
 
 
 wiki_photo_taken = wiki[0][0][1][0]
@@ -25,11 +29,13 @@ wiki_face_score2 = wiki[0][0][7][0]
 wiki_path = []
 
 
+
 for path in wiki_full_path:
     wiki_path.append('wiki_crop/' + path[0])
 
 
 wiki_genders = []
+
 
 
 for n in range(len(wiki_gender)):
@@ -45,7 +51,6 @@ wiki_dob = []
 
 for file in wiki_path:
     wiki_dob.append(file.split('_')[2])
-
 
 imdb_age = []
 wiki_age = []
@@ -63,19 +68,19 @@ for i in range(len(wiki_dob)):
         diff = -1
     wiki_age.append(diff)
 
+
 final_wiki = np.vstack((wiki_age, wiki_genders, wiki_path, wiki_face_score1, wiki_face_score2)).T
+
 
 final_wiki_df = pd.DataFrame(final_wiki)
 
 
 final_wiki_df.columns = cols
 
-meta = pd.DataFrame(final_wiki_df)
-
+meta = final_wiki_df
 
 meta = meta[meta['face_score1'] != '-inf']
 meta = meta[meta['face_score2'] == 'nan']
-print(meta.shape)
 
 meta = meta.drop(['face_score1', 'face_score2'], axis=1)
 

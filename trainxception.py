@@ -2,12 +2,14 @@ from MyModels import Xception
 from load_data import test_loader, train_loader, test_dataset, train_dataset
 import torch
 from train import train, batch_size
-
+import os
 
 import numpy as np
 
 
-
+save_dir = 'result_augmented'
+if not os.path.exists(save_dir):
+    os.makedirs(save_dir)
 #------------------------------------------------------------------------------#
 expected_train_batches = len(train_dataset) // batch_size + (len(train_dataset) % batch_size != 0)
 expected_test_batches = len(test_dataset) // batch_size + (len(test_dataset) % batch_size != 0)
@@ -30,11 +32,15 @@ else:
   device = "cpu"
 
 
-model = Xception()
+xception = Xception()
+xception_name = 'Xception'
+train_risk, test_risk, train_mae, test_mae = train(xception, 20 , device, 'Xception', save_dir)
 
-train_risk, test_risk, test_mae = train(model, 40 , device, 'Xception')
+save_path = f'{xception_name}.pth'
+torch.save(xception.state_dict(), save_path)
+print(f'Model saved to {save_path}')
 
-with open('result/risk_{}.txt'.format('Xception'), 'w') as f:
+with open(f'{save_dir}/risk_{xception_name}.txt', 'w') as f:
     f.write('train risk: \n')
     matrix = np.array(train_risk)
     np.savetxt(f, matrix, fmt='%f')
@@ -42,6 +48,11 @@ with open('result/risk_{}.txt'.format('Xception'), 'w') as f:
 
     f.write('test risk: \n')
     matrix = np.array(test_risk)
+    np.savetxt(f, matrix, fmt='%f')
+    f.write('\n')
+
+    f.write('train MAE: \n')
+    matrix = np.array(train_mae)
     np.savetxt(f, matrix, fmt='%f')
     f.write('\n')
 

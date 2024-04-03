@@ -10,6 +10,8 @@ def test(model, loss_function, device):
     # we first move our model to the configured device
     model = model.to(device = device)
 
+    model.eval()
+
     # we make sure we are not tracking gradient
     # gradient is used in training, we do not need it for test
     with torch.no_grad():
@@ -55,9 +57,12 @@ def test(model, loss_function, device):
 
 
 
-def train(model, num_epochs, device, model_name):
+def train(model, num_epochs, device, model_name, save_dir):
     # we first move our model to the configured device
+
     model = model.to(device = device)
+
+
 
     # set loss to binary CE
     loss_function = nn.MSELoss()
@@ -69,14 +74,16 @@ def train(model, num_epochs, device, model_name):
     # Initiate the values
     train_risk = []
     test_risk = []
-
+    train_mae = []
     test_mae = []
 
     for epoch in range(num_epochs):
+        model.train()
         # training risk in one epoch
         risk = 0
         start_time = time.time()
         counter = 0
+        mae = 0
         # loop over training data
         for i, (images, labels) in enumerate(train_loader):
 
@@ -94,6 +101,13 @@ def train(model, num_epochs, device, model_name):
             outputs = model(images)
             loss = loss_function(outputs, labels)
 
+            # Calculate the absolute difference between predicted and actual ages
+            absolute_difference = torch.abs(outputs - labels)
+
+            # Compute the average absolute difference
+            average_difference = absolute_difference.mean().item()
+
+            mae += average_difference
             # collect the training loss
             risk += loss.item()
 
@@ -105,6 +119,8 @@ def train(model, num_epochs, device, model_name):
             # one step of gradient descent
             optimizer.step()
             counter += 1
+
+
             if counter % 50 == 0:
                 print(counter)
 
@@ -114,6 +130,7 @@ def train(model, num_epochs, device, model_name):
 
         # collect losses and accuracy
         train_risk.append(risk/i)
+        train_mae.append(mae/i)
         test_risk.append(risk_epoch)
         test_mae.append(accuracy_epoch)
 
@@ -121,38 +138,33 @@ def train(model, num_epochs, device, model_name):
         # Start timing
 
 
-        print(f'Epoch [{epoch + 1}/{num_epochs}], Training Loss: {train_risk[-1]:.4f}, Test Loss: {test_risk[-1]:.4f}, Test MAE: {test_mae[-1]:.4f}')
+        print(f'Epoch [{epoch + 1}/{num_epochs}], Training Loss: {train_risk[-1]:.4f}, Test Loss: {test_risk[-1]:.4f}, Train MAE:{train_mae[-1]:.4f}, Test MAE: {test_mae[-1]:.4f}')
 
         end_time = time.time()
         # Calculate the time difference in seconds
         epoch_time = end_time - start_time
         print(f"Time spent for this epoch: {epoch_time} seconds")
 
-    save_dir = 'result'
-    if not os.path.exists(save_dir):
-        os.makedirs(save_dir)
-
     # plot the losses
-    plt.figure()
-    plt.plot([i + 1 for i in range(num_epochs)], train_risk, label='training risk')
-    plt.plot([i + 1 for i in range(num_epochs)], test_risk, label='test risk')
+    plt.plot([i+1 for i in range(num_epochs)], train_risk, label='training risk')
+    plt.plot([i+1 for i in range(num_epochs)], test_risk, label='test risk')
     plt.xlabel('Epoch')
     plt.ylabel('Loss')
     plt.title('Training and Test Loss')
+    plt.savefig(f'{save_dir}/risk_{model_name}.png')
     plt.legend()
-    plt.savefig('result/Loss_{}.png'.format(model_name))
+    plt.show()
+
 
     # plot the accuracy
-    plt.figure()
-    plt.plot([i + 1 for i in range(num_epochs)], test_mae, label='Mean Absolute Error')
+    plt.plot([i + 1 for i in range(num_epochs)], train_mae, label='train MAE')
+    plt.plot([i+1 for i in range(num_epochs)], test_mae, label='test MAE')
     plt.xlabel('Epoch')
     plt.ylabel('Mean Absolute Error')
     plt.title('Mean Absolute Error')
+    plt.savefig(f'{save_dir}/MAE_{model_name}.png')
     plt.legend()
-    plt.savefig("result/MAE_{}.png".format(model_name))
+    plt.show()
 
-    save_path = "result/trained_model_{}.pth".format(model_name)
-    torch.save(model.state_dict(), save_path)
-    print(f'Model saved to {save_path}')
 
-    return train_risk, test_risk, test_mae
+    return train_risk, test_risk, train_mae, test_mae

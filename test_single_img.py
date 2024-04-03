@@ -1,5 +1,5 @@
 import torch
-from CNNmodel import myCNN  # Import the model class
+from MyModels import myCNN  # Import the model class
 from torchvision import transforms
 from PIL import Image
 
