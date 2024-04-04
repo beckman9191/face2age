@@ -35,7 +35,7 @@ densenet = DenseNet()
 densenet_name = 'DenseNet'
 train_risk, test_risk, train_mae, test_mae = train(densenet, 20 , device, 'DenseNet', save_dir)
 
-save_path = f'{densenet_name}.pth'
+save_path = f'{save_dir}/{densenet_name}.pth'
 torch.save(densenet.state_dict(), save_path)
 print(f'Model saved to {save_path}')
 

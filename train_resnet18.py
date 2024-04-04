@@ -37,7 +37,7 @@ else:
 
 
 # pretrained model
-resnet18 = models.resnet18(pretrained=True)
+resnet18 = models.resnet18(pretrained=False)
 
 
 # Modify ResNet18
@@ -48,13 +48,13 @@ resnet18.fc = nn.Linear(num_features, 1)
 epoch_num = 20
 
 
-train_risk, test_risk, train_mae, test_mae = train(resnet18, epoch_num, device, "resnet18", save_dir)
+train_risk, test_risk, train_mae, test_mae = train(resnet18, epoch_num, device, "resnet18_pretrain=false", save_dir)
 
-save_path = 'resnet18.pth'
+save_path = f'{save_dir}/resnet18_pretrain=false.pth'
 torch.save(resnet18.state_dict(), save_path)
 print(f'Model saved to {save_path}')
 
-with open(f'{save_dir}/risk_resnet18.txt', 'w') as f:
+with open(f'{save_dir}/risk_resnet18_pretrain=false.txt', 'w') as f:
     f.write('train risk: \n')
     matrix = np.array(train_risk)
     np.savetxt(f, matrix, fmt='%f')
